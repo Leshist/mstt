@@ -5,11 +5,9 @@ services:
     image: wurstmeister/zookeeper
     ports:
       - "2181:2181"
-    environment:
-      - KAFKA_ADVERTISED_HOST_NAME=zookeeper
-#    links:
-#      - msttconsumer
-#      - msttproducer
+    links:
+      - msttconsumer
+      - msttproducer
 
   kafka:
     image: wurstmeister/kafka
@@ -25,32 +23,32 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
     links:
       - zookeeper
-#      - msttconsumer
-#      - msttproducer
+      - msttconsumer
+      - msttproducer
 
   msttmysql:
     hostname: msttmysql
     image: leshist/msttmysql:latest
     environment:
       MYSQL_ROOT_PASSWORD: example
-#    links:
-#      - msttconsumer
+    links:
+      - msttconsumer
     expose:
       - "3306"
     ports:
       - "3306:3306"
 
-#  msttproducer:
-#    hostname: msttproducer
-#    stdin_open: true
-#    image: leshist/msttapp:latest
-#    command: sbt "runMain StartProducerAndHttp"
-#    ports:
-#      - "80:8080"
-#
-#  msttconsumer:
-#    stdin_open: true
-#    hostname: msttconsumer
-#    image: leshist/msttapp:latest
-#    command: sbt "runMain StartConsumerAndDb"
+  msttproducer:
+    hostname: msttproducer
+    stdin_open: true
+    image: leshist/msttapp:latest
+    command: sbt "runMain StartProducerAndHttp"
+    ports:
+      - "80:8080"
+
+  msttconsumer:
+    stdin_open: true
+    hostname: msttconsumer
+    image: leshist/msttapp:latest
+    command: sbt "runMain StartConsumerAndDb"
 
