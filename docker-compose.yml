@@ -1,0 +1,56 @@
+version: '3'
+
+services:
+  zookeeper:
+    image: wurstmeister/zookeeper
+    ports:
+      - "2181:2181"
+    environment:
+      - KAFKA_ADVERTISED_HOST_NAME=zookeeper
+#    links:
+#      - msttconsumer
+#      - msttproducer
+
+  kafka:
+    image: wurstmeister/kafka
+    ports:
+      - "9092"
+    environment:
+      GROUP_ID: "authgroup"
+      KAFKA_ADVERTISED_HOST_NAME: 127.0.0.1
+      KAFKA_ADVERTISED_PORT: "9092"
+      KAFKA_CREATE_TOPICS: "auth:1:1"
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    links:
+      - zookeeper
+#      - msttconsumer
+#      - msttproducer
+
+  msttmysql:
+    hostname: msttmysql
+    image: leshist/msttmysql:latest
+    environment:
+      MYSQL_ROOT_PASSWORD: example
+#    links:
+#      - msttconsumer
+    expose:
+      - "3306"
+    ports:
+      - "3306:3306"
+
+#  msttproducer:
+#    hostname: msttproducer
+#    stdin_open: true
+#    image: leshist/msttapp:latest
+#    command: sbt "runMain StartProducerAndHttp"
+#    ports:
+#      - "80:8080"
+#
+#  msttconsumer:
+#    stdin_open: true
+#    hostname: msttconsumer
+#    image: leshist/msttapp:latest
+#    command: sbt "runMain StartConsumerAndDb"
+
